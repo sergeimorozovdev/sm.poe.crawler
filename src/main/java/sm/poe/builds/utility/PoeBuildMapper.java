@@ -5,6 +5,8 @@ import sm.poe.builds.entity.Build;
 import sm.poe.builds.entity.PoeClass;
 import sm.poe.builds.model.BuildDto;
 
+import java.util.List;
+
 @Component
 public class PoeBuildMapper
 {
@@ -20,14 +22,19 @@ public class PoeBuildMapper
 				.build();
 	}
 	
-	public BuildDto entityToModel(Build parsedBuild)
+	public BuildDto entityToModel(Build build)
 	{
 		return BuildDto.builder()
-				.name(parsedBuild.getName())
-				.url(parsedBuild.getUrl())
-				.version(parsedBuild.getVersion())
-				.views(parsedBuild.getViews())
-				.author(parsedBuild.getAuthor())
+				.name(build.getName())
+				.url(build.getUrl())
+				.version(build.getVersion())
+				.views(build.getViews())
+				.author(build.getAuthor())
+				.poeClass(build.getPoeClass().getName())
 				.build();
+	}
+
+	public List<BuildDto> entityToModel(List<Build> builds){
+		return builds.stream().map(this::entityToModel).toList();
 	}
 }
