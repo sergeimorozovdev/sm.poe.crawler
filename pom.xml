@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>sm.poe</groupId>
 	<artifactId>crawler</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>sm.poe.crawler</name>
 	<description>sm.poe.crawler</description>
 	<properties>
