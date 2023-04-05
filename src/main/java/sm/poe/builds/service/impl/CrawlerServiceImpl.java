@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import sm.poe.builds.client.HttpClient;
 import sm.poe.builds.model.BuildDto;
@@ -46,7 +47,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    //@Scheduled(fixedDelay = 500000)
+    @Scheduled(fixedDelay = 500000)
     public void crawl() throws URISyntaxException, IOException, InterruptedException {
         List<PoeClassDto> poeClassDtos = aggregate();
         buildService.saveBuilds(poeClassDtos);
@@ -86,15 +87,18 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
 
     private void mapDocumentToDto(Document document, PoeClassDto poeClassDto) {
-        List<BuildDto> builds = document.getElementsByClass("title")
+        List<BuildDto> builds = document.getElementsByClass("thread")
                 .stream()
-                .map(e ->
+                .map(threadElement ->
                 {
-                    Elements a = e.select("a");
+                    Element postStatElement = threadElement.parent().getElementsByClass("post-stat").get(0);
+                    Element titleElement = threadElement.getElementsByClass("title").get(0);
+                    Elements a = titleElement.select("a");
                     return BuildDto.builder()
                             .name(a.text())
                             .url(a.attr("href"))
                             .version(getBuildVersion(a.text()))
+                            .views(Integer.parseInt(postStatElement.select("span").text()))
                             .build();
                 })
                 .filter(e -> Strings.isNotBlank(e.getVersion()))

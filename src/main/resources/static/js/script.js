@@ -8,7 +8,7 @@ $("#version").on('change',tableDataRequest);
 
 function poeClassDataRequest(){
     $.ajax({
-        url: "http://localhost:8080/classes",
+        url: $(location).attr('host') + "/classes",
         async : false
         })
         .then(fillPoeClassSelect);
@@ -16,7 +16,7 @@ function poeClassDataRequest(){
 
 function versionDataRequest(){
     $.ajax({
-        url: "http://localhost:8080/versions",
+        url: $(location).attr('host') + "/versions",
         async : false
         })
         .then(fillVersionSelect);
@@ -26,7 +26,7 @@ function tableDataRequest() {
     var className = $("#poeClasses").find(":selected").val();
     var version = $("#version").find(":selected").val();
     $.ajax({
-        url: "http://localhost:8080/builds?version=" + version + "&poeClass=" + className,
+        url: $(location).attr('host') + "/builds?version=" + version + "&poeClass=" + className,
         async : false
         })
         .then(fillTable);
@@ -38,8 +38,7 @@ function fillTable(data) {
         $htmlstring ="<tr>"+
             "<td>"+"<a href='https://www.pathofexile.com" + data[key].url  + "' target='_blank'>"
             + data[key].name+"</a></td>"+
-            "<td>"+data[key].views+"</td>"+
-            "<td>"+data[key].author+"</td>"
+            "<td>"+data[key].views+"</td>"
             +"</tr>";
         $("#buildsTableBody").append($htmlstring);
     });
