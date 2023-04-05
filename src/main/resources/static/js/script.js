@@ -3,12 +3,14 @@ $(document).ready(tableDataRequest);
 poeClassDataRequest();
 versionDataRequest();
 
+var h = $(location).attr('host');
+
 $("#poeClasses").on('change',tableDataRequest);
 $("#version").on('change',tableDataRequest);
 
 function poeClassDataRequest(){
     $.ajax({
-        url: $(location).attr('host') + "/classes",
+        url: getHost() + "/classes",
         async : false
         })
         .then(fillPoeClassSelect);
@@ -16,7 +18,7 @@ function poeClassDataRequest(){
 
 function versionDataRequest(){
     $.ajax({
-        url: $(location).attr('host') + "/versions",
+        url: getHost() + "/versions",
         async : false
         })
         .then(fillVersionSelect);
@@ -26,7 +28,7 @@ function tableDataRequest() {
     var className = $("#poeClasses").find(":selected").val();
     var version = $("#version").find(":selected").val();
     $.ajax({
-        url: $(location).attr('host') + "/builds?version=" + version + "&poeClass=" + className,
+        url: getHost() + "/builds?version=" + version + "&poeClass=" + className,
         async : false
         })
         .then(fillTable);
@@ -59,4 +61,8 @@ function fillVersionSelect(data) {
         $htmlstring = "<option value=" + data[key] + ">" + data[key] + "</option>";
         $("#version").append($htmlstring);
     });
+}
+
+function getHost(){
+    return $(location).attr('protocol') + "//" + $(location).attr('host');
 }
