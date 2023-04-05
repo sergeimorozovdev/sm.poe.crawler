@@ -1,24 +1,63 @@
-$.ajax({
-        url: "http://localhost:8080/builds?version=3.20"
-    }).then(fillTable);
+$(document).ready(tableDataRequest);
 
-$("#poeClasses").on('change',
-function classChose(className) {
-  var className = $(this).find(":selected").val();
-  $.ajax({
-          url: "http://localhost:8080/builds?version=3.20&poeClass=" + className
-      }).then(fillTable);
-});
+poeClassDataRequest();
+versionDataRequest();
+
+$("#poeClasses").on('change',tableDataRequest);
+$("#version").on('change',tableDataRequest);
+
+function poeClassDataRequest(){
+    $.ajax({
+        url: "http://localhost:8080/classes",
+        async : false
+        })
+        .then(fillPoeClassSelect);
+}
+
+function versionDataRequest(){
+    $.ajax({
+        url: "http://localhost:8080/versions",
+        async : false
+        })
+        .then(fillVersionSelect);
+}
+
+function tableDataRequest() {
+    var className = $("#poeClasses").find(":selected").val();
+    var version = $("#version").find(":selected").val();
+    $.ajax({
+        url: "http://localhost:8080/builds?version=" + version + "&poeClass=" + className,
+        async : false
+        })
+        .then(fillTable);
+}
 
 function fillTable(data) {
-       $("#buildsTableBody").empty();
-       $.each(data,function(key,$datum){
-            $htmlstring ="<tr>"+
-                  "<td>"+"<a href='https://www.pathofexile.com" + data[key].url  + "' target='_blank'>"
-                  + data[key].name+"</a></td>"+
-                   "<td>"+data[key].views+"</td>"+
-                   "<td>"+data[key].author+"</td>"
-                   +"</tr>";
-            $("#buildsTableBody").append($htmlstring);
-        });
-    }
+    $("#buildsTableBody").empty();
+    $.each(data,function(key,$datum){
+        $htmlstring ="<tr>"+
+            "<td>"+"<a href='https://www.pathofexile.com" + data[key].url  + "' target='_blank'>"
+            + data[key].name+"</a></td>"+
+            "<td>"+data[key].views+"</td>"+
+            "<td>"+data[key].author+"</td>"
+            +"</tr>";
+        $("#buildsTableBody").append($htmlstring);
+    });
+}
+
+function fillPoeClassSelect(data) {
+    $("#poeClasses").empty();
+    $.each(data,function(key,$datum){
+        var name = data[key].name;
+        $htmlstring = "<option value=" + name + ">" + name + "</option>";
+        $("#poeClasses").append($htmlstring);
+    });
+}
+
+function fillVersionSelect(data) {
+    $("#version").empty();
+    $.each(data,function(key,$datum){
+        $htmlstring = "<option value=" + data[key] + ">" + data[key] + "</option>";
+        $("#version").append($htmlstring);
+    });
+}

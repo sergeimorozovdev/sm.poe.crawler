@@ -64,7 +64,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             int totalPages = getTotalPages(document);
 
             PoeClassDto poeClassDto = PoeClassDto.builder()
-                    .className(className)
+                    .name(className)
                     .builds(new ArrayList<>())
                     .build();
             mapDocumentToDto(document, poeClassDto);

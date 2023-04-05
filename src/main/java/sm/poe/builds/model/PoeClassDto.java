@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class PoeClassDto
 {
-	private final String className;
+	private final String name;
 	private List<BuildDto> builds;
 	
 }
