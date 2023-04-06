@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Getter
@@ -47,7 +48,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    //@Scheduled(fixedDelay = 500000)
+    //@Scheduled(fixedDelay = 12, timeUnit = TimeUnit.HOURS)
     public void crawl() throws URISyntaxException, IOException, InterruptedException {
         List<PoeClassDto> poeClassDtos = aggregate();
         buildService.saveBuilds(poeClassDtos);

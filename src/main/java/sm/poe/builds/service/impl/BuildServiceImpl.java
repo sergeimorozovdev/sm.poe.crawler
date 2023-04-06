@@ -43,6 +43,7 @@ public class BuildServiceImpl implements BuildService {
 
     @Override
     public void saveBuilds(List<PoeClassDto> poeClassDtos) {
+        buildRepository.deleteAll();
         poeClassDtos.forEach(dto ->
         {
             PoeClass poeClass = poeClassMapper.modelToEntity(dto);
@@ -51,7 +52,8 @@ public class BuildServiceImpl implements BuildService {
                     .stream()
                     .map(b -> poeBuildMapper.modelToEntity(b, poeClass))
                     .toList();
-            buildRepository.saveAllAndFlush(builds);
+            buildRepository.saveAll(builds);
         });
+        buildRepository.flush();
     }
 }
