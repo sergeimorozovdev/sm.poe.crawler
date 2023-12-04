@@ -3,5 +3,5 @@ package sm.poe.builds.service;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface CrawlerService {
+public interface BuildsCrawlerService {
 }

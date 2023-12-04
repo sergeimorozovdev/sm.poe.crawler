@@ -1,14 +1,12 @@
 package sm.poe.builds.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @Builder
+@ToString
 public class BuildDto
 {
 	private String name;
@@ -17,13 +15,4 @@ public class BuildDto
 	private Integer views;
 	private String author;
 	private String poeClass;
-	
-	@Override
-	public String toString()
-	{
-		return "Build{" +
-				"name='" + name + '\'' +
-				", url='" + url + '\'' +
-				'}';
-	}
 }

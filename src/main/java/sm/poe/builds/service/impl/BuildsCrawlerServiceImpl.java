@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.logging.log4j.util.Strings;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -17,7 +16,8 @@ import sm.poe.builds.client.HttpClient;
 import sm.poe.builds.model.BuildDto;
 import sm.poe.builds.model.PoeClassDto;
 import sm.poe.builds.service.BuildService;
-import sm.poe.builds.service.CrawlerService;
+import sm.poe.builds.service.BuildsCrawlerService;
+import sm.poe.builds.utility.HtmlHelper;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class CrawlerServiceImpl implements CrawlerService {
+public class BuildsCrawlerServiceImpl implements BuildsCrawlerService {
     @Value("${poe.forum.path}")
     private String forumPath;
 
@@ -50,18 +50,19 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     //@Scheduled(fixedDelay = 12, timeUnit = TimeUnit.HOURS)
     public void crawl() throws URISyntaxException, IOException, InterruptedException {
-        List<PoeClassDto> poeClassDtos = aggregate();
+        List<PoeClassDto> poeClassDtos = aggregateBuildsByClass();
         buildService.saveBuilds(poeClassDtos);
         System.out.println("Builds saved");
     }
 
-    public List<PoeClassDto> aggregate()
+    public List<PoeClassDto> aggregateBuildsByClass()
             throws URISyntaxException, IOException, InterruptedException {
+        System.out.println("Builds parsing started");
         List<PoeClassDto> poeClassDtos = new ArrayList<>();
         for (String classPath : classUrls) {
             String fullClassUrl = forumPath + classPath;
             String html = httpClient.get(fullClassUrl);
-            Document document = parseHtml(html);
+            Document document = HtmlHelper.parseHtml(html);
             String className = getClassName(document);
             int totalPages = getTotalPages(document);
 
@@ -69,25 +70,20 @@ public class CrawlerServiceImpl implements CrawlerService {
                     .name(className)
                     .builds(new ArrayList<>())
                     .build();
-            mapDocumentToDto(document, poeClassDto);
+            mapDocumentToBuilds(document, poeClassDto);
             for (int i = 2; i <= totalPages; i++) {
                 System.out.println("Parse " + className + " page " + i);
                 html = httpClient.get(fullClassUrl + pagePostfix + i);
-                document = parseHtml(html);
-                mapDocumentToDto(document, poeClassDto);
+                document = HtmlHelper.parseHtml(html);
+                mapDocumentToBuilds(document, poeClassDto);
             }
             poeClassDtos.add(poeClassDto);
         }
-        System.out.println("Parsing finished");
+        System.out.println("Builds parsing finished");
         return poeClassDtos;
     }
 
-
-    private Document parseHtml(String html) {
-        return Jsoup.parse(html);
-    }
-
-    private void mapDocumentToDto(Document document, PoeClassDto poeClassDto) {
+    private void mapDocumentToBuilds(Document document, PoeClassDto poeClassDto) {
         List<BuildDto> builds = document.getElementsByClass("thread")
                 .stream()
                 .map(threadElement ->

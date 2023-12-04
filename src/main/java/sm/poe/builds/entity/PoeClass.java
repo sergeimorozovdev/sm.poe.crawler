@@ -5,11 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Set;
 
@@ -20,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@ToString
 public class PoeClass
 {
 	@Id
@@ -28,13 +25,4 @@ public class PoeClass
 	
 	@OneToMany(mappedBy = "poeClass")
 	private Set<Build> builds;
-	
-	
-	@Override
-	public String toString()
-	{
-		return "PoeClass{" +
-				"name='" + name + '\'' +
-				'}';
-	}
 }
