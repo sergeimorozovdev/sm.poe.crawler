@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum GemType {
-    AWAKENED_GEM("AwakenedGem"),
+    //AWAKENED_GEM("AwakenedGem"),
     SKILL_GEM("SkillGemsGem"),
     SUPPORT_GEM("SupportGemsGem");
 

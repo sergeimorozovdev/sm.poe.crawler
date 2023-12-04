@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sm.poe.builds.model.BuildDto;
 import sm.poe.builds.service.BuildService;
-import sm.poe.builds.utility.Filter;
+import sm.poe.builds.utility.PoeBuildFilter;
 
 import java.util.List;
 
@@ -20,6 +20,6 @@ public class BuildController {
     ResponseEntity<List<BuildDto>> getBuilds(
             @RequestParam(required = false) String poeClass,
             @RequestParam(required = false) String version) {
-        return ResponseEntity.ok(buildService.findBuilds(new Filter(version, poeClass)));
+        return ResponseEntity.ok(buildService.findBuilds(new PoeBuildFilter(version, poeClass)));
     }
 }

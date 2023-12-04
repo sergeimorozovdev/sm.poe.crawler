@@ -5,6 +5,8 @@ import sm.poe.builds.entity.Gem;
 import sm.poe.builds.model.GemDto;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class GemMapper {
@@ -28,5 +30,9 @@ public class GemMapper {
 
     public List<GemDto> entityToModel(List<Gem> gems) {
         return gems.stream().map(this::entityToModel).toList();
+    }
+
+    public Map<String, GemDto> entityToMapModel(List<Gem> gems) {
+        return gems.stream().collect(Collectors.toMap(Gem::getName, this::entityToModel));
     }
 }

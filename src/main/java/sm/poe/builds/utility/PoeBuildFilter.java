@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-public class Filter {
+public class PoeBuildFilter {
     private String version;
     private String poeClass;
 }

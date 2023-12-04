@@ -1,16 +1,17 @@
 package sm.poe.builds.service;
 
 import org.springframework.stereotype.Service;
-import sm.poe.builds.model.BuildDto;
 import sm.poe.builds.model.GemDto;
-import sm.poe.builds.utility.Filter;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface GemService {
 
-    List<BuildDto> findGems(Filter filter);
+    List<GemDto> findGems();
+
+    Map<String, GemDto> findGemsAsMap();
 
     void saveGems(List<GemDto> gemDtos);
 }

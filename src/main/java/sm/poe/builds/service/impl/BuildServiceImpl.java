@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 import sm.poe.builds.entity.Build;
 import sm.poe.builds.entity.PoeClass;
 import sm.poe.builds.model.BuildDto;
+import sm.poe.builds.model.GemDto;
 import sm.poe.builds.model.PoeClassDto;
 import sm.poe.builds.repository.BuildRepository;
 import sm.poe.builds.repository.PoeClassRepository;
 import sm.poe.builds.service.BuildService;
-import sm.poe.builds.utility.Filter;
+import sm.poe.builds.service.GemService;
+import sm.poe.builds.utility.PoeBuildFilter;
 import sm.poe.builds.utility.PoeBuildMapper;
 import sm.poe.builds.utility.PoeClassMapper;
 
@@ -23,22 +25,42 @@ public class BuildServiceImpl implements BuildService {
 
     private final BuildRepository buildRepository;
     private final PoeClassRepository poeClassRepository;
+    private final GemService gemService;
     private final PoeBuildMapper poeBuildMapper;
     private final PoeClassMapper poeClassMapper;
 
     @Override
-    public List<BuildDto> findBuilds(Filter filter) {
-        String version = filter.getVersion();
-        String poeClass = filter.getPoeClass();
+    public List<BuildDto> findBuilds(PoeBuildFilter poeBuildFilter) {
+        String version = poeBuildFilter.getVersion();
+        String poeClass = poeBuildFilter.getPoeClass();
 
+        List<BuildDto> buildDtos;
         if (isNotBlank(version) && isNotBlank(poeClass)) {
-            return poeBuildMapper.entityToModel(buildRepository.findByPoeClassNameAndVersion(poeClass, version));
+            buildDtos = poeBuildMapper.entityToModel(buildRepository.findByPoeClassNameAndVersion(poeClass, version));
         } else if (isNotBlank(version)) {
-            return poeBuildMapper.entityToModel(buildRepository.findByVersion(version));
+            buildDtos = poeBuildMapper.entityToModel(buildRepository.findByVersion(version));
         } else if (isNotBlank(poeClass)) {
-            return poeBuildMapper.entityToModel(buildRepository.findByPoeClassName(poeClass));
+            buildDtos = poeBuildMapper.entityToModel(buildRepository.findByPoeClassName(poeClass));
+        } else {
+            buildDtos = poeBuildMapper.entityToModel(buildRepository.findAll());
         }
-        return poeBuildMapper.entityToModel(buildRepository.findAll());
+
+        List<GemDto> gems = gemService.findGems();
+
+        buildDtos.stream().forEach(buildDto -> {
+            String buildName = buildDto.getName();
+            gems.stream().forEach(gem -> {
+                String gemName = gem.getName();
+                int startIndex = buildName.indexOf(gemName);
+                if (startIndex >= 0) {
+                    String wrapBuildName = "<img src=\"" + gem.getImageUrl() + "\">" +
+                            "<a style='color: " + gem.getColor() + "'>" + gemName + "</a>";
+                    buildDto.setName(buildName.replace(gemName, wrapBuildName));
+                }
+            });
+        });
+
+        return buildDtos;
     }
 
     @Override
