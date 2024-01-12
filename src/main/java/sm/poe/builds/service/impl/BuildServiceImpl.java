@@ -47,13 +47,13 @@ public class BuildServiceImpl implements BuildService {
 
         List<GemDto> gems = gemService.findGems();
 
-        buildDtos.stream().forEach(buildDto -> {
-            String buildName = buildDto.getName();
-            gems.stream().forEach(gem -> {
-                String gemName = gem.getName();
+        buildDtos.forEach(buildDto -> {
+            String buildName = buildDto.getName().toLowerCase();
+            gems.forEach(gem -> {
+                String gemName = gem.getName().toLowerCase();
                 int startIndex = buildName.indexOf(gemName);
                 if (startIndex >= 0) {
-                    String wrapBuildName = "<img src=\"" + gem.getImageUrl() + "\">" +
+                    String wrapBuildName = /*"<img src=\"" + gem.getImageUrl() + "\">" +*/
                             "<a style='color: " + gem.getColor() + "'>" + gemName + "</a>";
                     buildDto.setName(buildName.replace(gemName, wrapBuildName));
                 }
