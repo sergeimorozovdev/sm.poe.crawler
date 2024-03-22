@@ -12,5 +12,5 @@ public interface BuildService {
 
     List<BuildDto> findBuilds(PoeBuildFilter poeBuildFilter);
 
-    void saveBuilds(List<PoeClassDto> poeClassDtos);
+    void saveBuilds(List<BuildDto> poeBuilds);
 }

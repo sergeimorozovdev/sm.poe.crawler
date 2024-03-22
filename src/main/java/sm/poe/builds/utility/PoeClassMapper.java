@@ -14,6 +14,10 @@ public class PoeClassMapper {
                 .build();
     }
 
+    public List<PoeClass> modelToEntity(List<PoeClassDto> poeClassDto) {
+        return poeClassDto.stream().map(this::modelToEntity).toList();
+    }
+
     public PoeClassDto entityToModel(PoeClass poeClass) {
         return PoeClassDto.builder()
                 .name(poeClass.getName())

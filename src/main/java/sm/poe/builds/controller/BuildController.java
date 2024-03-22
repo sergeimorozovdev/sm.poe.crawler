@@ -19,7 +19,8 @@ public class BuildController {
     @GetMapping(produces = "application/json")
     ResponseEntity<List<BuildDto>> getBuilds(
             @RequestParam(required = false) String poeClass,
-            @RequestParam(required = false) String version) {
-        return ResponseEntity.ok(buildService.findBuilds(new PoeBuildFilter(version, poeClass)));
+            @RequestParam(required = false) String version,
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(buildService.findBuilds(new PoeBuildFilter(version, poeClass, search)));
     }
 }

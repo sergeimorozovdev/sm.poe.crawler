@@ -15,8 +15,14 @@ public class PoeClassServiceImpl implements PoeClassService {
 
     private final PoeClassRepository poeClassRepository;
     private final PoeClassMapper poeClassMapper;
+
     @Override
     public List<PoeClassDto> getPoeClasses() {
         return poeClassMapper.entityToModel(poeClassRepository.findAll());
+    }
+
+    @Override
+    public void savePoeClasses(List<PoeClassDto> dtos) {
+        poeClassRepository.saveAllAndFlush(poeClassMapper.modelToEntity(dtos));
     }
 }

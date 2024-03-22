@@ -1,12 +1,12 @@
 package sm.poe.builds.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import sm.poe.builds.entity.Build;
 import sm.poe.builds.entity.PoeClass;
 import sm.poe.builds.model.BuildDto;
 import sm.poe.builds.model.GemDto;
-import sm.poe.builds.model.PoeClassDto;
 import sm.poe.builds.repository.BuildRepository;
 import sm.poe.builds.repository.PoeClassRepository;
 import sm.poe.builds.service.BuildService;
@@ -16,6 +16,7 @@ import sm.poe.builds.utility.PoeBuildMapper;
 import sm.poe.builds.utility.PoeClassMapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
@@ -33,6 +34,7 @@ public class BuildServiceImpl implements BuildService {
     public List<BuildDto> findBuilds(PoeBuildFilter poeBuildFilter) {
         String version = poeBuildFilter.getVersion();
         String poeClass = poeBuildFilter.getPoeClass();
+        String search = poeBuildFilter.getSearch();
 
         List<BuildDto> buildDtos;
         if (isNotBlank(version) && isNotBlank(poeClass)) {
@@ -45,8 +47,36 @@ public class BuildServiceImpl implements BuildService {
             buildDtos = poeBuildMapper.entityToModel(buildRepository.findAll());
         }
 
-        List<GemDto> gems = gemService.findGems();
+        if (Strings.isNotBlank(search)) {
+            buildDtos = buildDtos.stream().filter(
+                            buildDto -> buildDto.getName().toLowerCase()
+                                    .contains(search.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
 
+        setTextColor(buildDtos);
+
+        return buildDtos;
+    }
+
+
+    @Override
+    public void saveBuilds(List<BuildDto> poeBuilds) {
+        buildRepository.deleteAll();
+        List<PoeClass> poeClasses = poeClassRepository.findAll();
+        List<Build> builds = poeBuilds.stream().map(buildDto ->
+        {
+            PoeClass poeClass = poeClasses.stream()
+                    .filter(pc -> pc.getName().equals(buildDto.getPoeClassName()))
+                    .findFirst()
+                    .get();
+            return poeBuildMapper.modelToEntity(buildDto, poeClass);
+        }).collect(Collectors.toList());
+        buildRepository.saveAllAndFlush(builds);
+    }
+
+    private void setTextColor(List<BuildDto> buildDtos) {
+        List<GemDto> gems = gemService.findGems();
         buildDtos.forEach(buildDto -> {
             String buildName = buildDto.getName().toLowerCase();
             gems.forEach(gem -> {
@@ -59,23 +89,5 @@ public class BuildServiceImpl implements BuildService {
                 }
             });
         });
-
-        return buildDtos;
-    }
-
-    @Override
-    public void saveBuilds(List<PoeClassDto> poeClassDtos) {
-        buildRepository.deleteAll();
-        poeClassDtos.forEach(dto ->
-        {
-            PoeClass poeClass = poeClassMapper.modelToEntity(dto);
-            poeClassRepository.saveAndFlush(poeClass);
-            List<Build> builds = dto.getBuilds()
-                    .stream()
-                    .map(b -> poeBuildMapper.modelToEntity(b, poeClass))
-                    .toList();
-            buildRepository.saveAll(builds);
-        });
-        buildRepository.flush();
     }
 }

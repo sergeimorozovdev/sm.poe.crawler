@@ -17,6 +17,7 @@ import sm.poe.builds.model.BuildDto;
 import sm.poe.builds.model.PoeClassDto;
 import sm.poe.builds.service.BuildService;
 import sm.poe.builds.service.BuildsCrawlerService;
+import sm.poe.builds.service.PoeClassService;
 import sm.poe.builds.utility.HtmlHelper;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 @Getter
@@ -45,46 +47,50 @@ public class BuildsCrawlerServiceImpl implements BuildsCrawlerService {
 
     private final HttpClient httpClient;
     private final BuildService buildService;
+    private final PoeClassService poeClassService;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    //@Scheduled(fixedDelay = 12, timeUnit = TimeUnit.HOURS)
+    @Scheduled(fixedDelay = 12, timeUnit = TimeUnit.HOURS)
     public void crawl() throws URISyntaxException, IOException, InterruptedException {
-        List<PoeClassDto> poeClassDtos = aggregateBuildsByClass();
-        buildService.saveBuilds(poeClassDtos);
+        System.out.println("Builds parsing started");
+        List<PoeClassDto> poeClassDtos = new ArrayList<>();
+        List<BuildDto> buildDtos = new ArrayList<>();
+        for (String classUrl : classUrls) {
+            List<BuildDto> buildDtosByClass = aggregateBuildsByClass(classUrl);
+            String poeClassName = buildDtosByClass.get(0).getPoeClassName();
+            poeClassDtos.add(new PoeClassDto(poeClassName));
+            buildDtos.addAll(buildDtosByClass);
+        }
+
+        System.out.println("Builds parsing finished");
+        poeClassService.savePoeClasses(poeClassDtos);
+        buildService.saveBuilds(buildDtos);
         System.out.println("Builds saved");
     }
 
-    public List<PoeClassDto> aggregateBuildsByClass()
+    public List<BuildDto> aggregateBuildsByClass(String classUrl)
             throws URISyntaxException, IOException, InterruptedException {
-        System.out.println("Builds parsing started");
-        List<PoeClassDto> poeClassDtos = new ArrayList<>();
-        for (String classPath : classUrls) {
-            String fullClassUrl = forumPath + classPath;
-            String html = httpClient.get(fullClassUrl);
-            Document document = HtmlHelper.parseHtml(html);
-            String className = getClassName(document);
-            int totalPages = getTotalPages(document);
+        String fullClassUrl = forumPath + classUrl;
+        String html = httpClient.get(fullClassUrl);
+        Document document = HtmlHelper.parseHtml(html);
+        String poeClassName = getClassName(document);
+        int totalPages = getTotalPages(document);
 
-            PoeClassDto poeClassDto = PoeClassDto.builder()
-                    .name(className)
-                    .builds(new ArrayList<>())
-                    .build();
-            mapDocumentToBuilds(document, poeClassDto);
-            for (int i = 2; i <= totalPages; i++) {
-                System.out.println("Parse " + className + " page " + i);
-                html = httpClient.get(fullClassUrl + pagePostfix + i);
-                document = HtmlHelper.parseHtml(html);
-                mapDocumentToBuilds(document, poeClassDto);
-            }
-            poeClassDtos.add(poeClassDto);
+        List<BuildDto> buildDtos = mapDocumentToBuilds(document, poeClassName);
+        System.out.println("Parse " + poeClassName + " page 1");
+        for (int i = 2; i <= totalPages; i++) {
+            System.out.println("Parse " + poeClassName + " page " + i);
+            html = httpClient.get(fullClassUrl + pagePostfix + i);
+            document = HtmlHelper.parseHtml(html);
+            buildDtos.addAll(mapDocumentToBuilds(document, poeClassName));
         }
-        System.out.println("Builds parsing finished");
-        return poeClassDtos;
+
+        return buildDtos;
     }
 
-    private void mapDocumentToBuilds(Document document, PoeClassDto poeClassDto) {
-        List<BuildDto> builds = document.getElementsByClass("thread")
+    private List<BuildDto> mapDocumentToBuilds(Document document, String poeClassName) {
+        return document.getElementsByClass("thread")
                 .stream()
                 .map(threadElement ->
                 {
@@ -96,12 +102,11 @@ public class BuildsCrawlerServiceImpl implements BuildsCrawlerService {
                             .url(a.attr("href"))
                             .version(getBuildVersion(a.text()))
                             .views(Integer.parseInt(postStatElement.select("span").text()))
+                            .poeClassName(poeClassName)
                             .build();
                 })
                 .filter(e -> Strings.isNotBlank(e.getVersion()))
-                .toList();
-        poeClassDto.getBuilds().addAll(builds);
-
+                .collect(Collectors.toList());
     }
 
     private String getBuildVersion(String name) {

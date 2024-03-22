@@ -14,5 +14,5 @@ public class BuildDto
 	private String version;
 	private Integer views;
 	private String author;
-	private String poeClass;
+	private String poeClassName;
 }

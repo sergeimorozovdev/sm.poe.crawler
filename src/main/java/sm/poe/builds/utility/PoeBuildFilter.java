@@ -10,4 +10,5 @@ import lombok.Setter;
 public class PoeBuildFilter {
     private String version;
     private String poeClass;
+    private String search;
 }
