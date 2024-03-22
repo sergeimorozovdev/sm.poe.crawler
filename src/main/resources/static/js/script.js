@@ -7,6 +7,12 @@ var h = $(location).attr('host');
 
 $("#poeClasses").on('change',tableDataRequest);
 $("#version").on('change',tableDataRequest);
+$("#search").keypress(function (e) {
+               if (e.which == 13) {
+                tableDataRequest();
+                return false;
+               }
+             });
 
 function poeClassDataRequest(){
     $.ajax({
@@ -27,8 +33,9 @@ function versionDataRequest(){
 function tableDataRequest() {
     var className = $("#poeClasses").find(":selected").val();
     var version = $("#version").find(":selected").val();
+    var search = $("#search").val();
     $.ajax({
-        url: getHost() + "/builds?version=" + version + "&poeClass=" + className,
+        url: getHost() + "/builds?version=" + version + "&poeClass=" + className + "&search=" + search,
         async : false
         })
         .then(fillTable);
