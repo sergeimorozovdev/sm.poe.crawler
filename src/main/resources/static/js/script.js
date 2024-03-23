@@ -35,7 +35,7 @@ function tableDataRequest() {
     var version = $("#version").find(":selected").val();
     var search = $("#search").val();
     $.ajax({
-        url: getHost() + "/builds?version=" + version + "&poeClass=" + className + "&search=" + search,
+        url: getHost() + "/builds?version=" + version + /*"&poeClass=" + className +*/ "&search=" + search,
         async : false
         })
         .then(fillTable);
