@@ -31,11 +31,11 @@ function versionDataRequest(){
 }
 
 function tableDataRequest() {
-    var className = $("#poeClasses").find(":selected").val();
+    var poeClassName = $("#poeClasses").find(":selected").val();
     var version = $("#version").find(":selected").val();
     var search = $("#search").val();
     $.ajax({
-        url: getHost() + "/builds?version=" + version + /*"&poeClass=" + className +*/ "&search=" + search,
+        url: getHost() + "/builds?version=" + version +  "&poeClassName=" + poeClassName +  "&search=" + search,
         async : false
         })
         .then(fillTable);
@@ -45,6 +45,7 @@ function fillTable(data) {
     $("#buildsTableBody").empty();
     $.each(data,function(key,$datum){
         $htmlstring ="<tr>"+
+            "<td>"+data[key].poeClassName+"</td>"+
             "<td>"+"<a href='https://www.pathofexile.com" + data[key].url  + "' target='_blank'>"
             + data[key].name+"</a></td>"+
             "<td>"+data[key].views+"</td>"

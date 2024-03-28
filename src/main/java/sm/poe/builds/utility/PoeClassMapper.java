@@ -5,6 +5,7 @@ import sm.poe.builds.entity.PoeClass;
 import sm.poe.builds.model.PoeClassDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PoeClassMapper {
@@ -25,6 +26,6 @@ public class PoeClassMapper {
     }
 
     public List<PoeClassDto> entityToModel(List<PoeClass> poeClasses) {
-        return poeClasses.stream().map(this::entityToModel).toList();
+        return poeClasses.stream().map(this::entityToModel).collect(Collectors.toList());
     }
 }

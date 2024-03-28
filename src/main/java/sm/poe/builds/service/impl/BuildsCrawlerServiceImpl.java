@@ -51,7 +51,7 @@ public class BuildsCrawlerServiceImpl implements BuildsCrawlerService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    //@Scheduled(fixedDelay = 12, timeUnit = TimeUnit.HOURS)
+    //@Scheduled(fixedDelay = 3, timeUnit = TimeUnit.HOURS)
     public void crawl() throws URISyntaxException, IOException, InterruptedException {
         System.out.println("Builds parsing started");
         List<PoeClassDto> poeClassDtos = new ArrayList<>();

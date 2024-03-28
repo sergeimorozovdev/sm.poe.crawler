@@ -6,6 +6,7 @@ import sm.poe.builds.entity.PoeClass;
 import sm.poe.builds.model.BuildDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PoeBuildMapper {
@@ -32,6 +33,6 @@ public class PoeBuildMapper {
     }
 
     public List<BuildDto> entityToModel(List<Build> builds) {
-        return builds.stream().map(this::entityToModel).toList();
+        return builds.stream().map(this::entityToModel).collect(Collectors.toList());
     }
 }

@@ -13,12 +13,15 @@ import java.util.List;
 @Service
 public class PoeClassServiceImpl implements PoeClassService {
 
+    public static final String ALL_CLASSES = "All";
     private final PoeClassRepository poeClassRepository;
     private final PoeClassMapper poeClassMapper;
 
     @Override
     public List<PoeClassDto> getPoeClasses() {
-        return poeClassMapper.entityToModel(poeClassRepository.findAll());
+        List<PoeClassDto> poeClassDtos = poeClassMapper.entityToModel(poeClassRepository.findAll());
+        poeClassDtos.add(new PoeClassDto(ALL_CLASSES));
+        return poeClassDtos;
     }
 
     @Override

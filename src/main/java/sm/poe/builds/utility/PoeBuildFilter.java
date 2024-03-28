@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PoeBuildFilter {
     private String version;
-    private String poeClass;
+    private String poeClassName;
     private String search;
 }

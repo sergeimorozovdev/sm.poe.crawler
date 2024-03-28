@@ -13,7 +13,6 @@ import sm.poe.builds.service.BuildService;
 import sm.poe.builds.service.GemService;
 import sm.poe.builds.utility.PoeBuildFilter;
 import sm.poe.builds.utility.PoeBuildMapper;
-import sm.poe.builds.utility.PoeClassMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,21 +27,20 @@ public class BuildServiceImpl implements BuildService {
     private final PoeClassRepository poeClassRepository;
     private final GemService gemService;
     private final PoeBuildMapper poeBuildMapper;
-    private final PoeClassMapper poeClassMapper;
 
     @Override
     public List<BuildDto> findBuilds(PoeBuildFilter poeBuildFilter) {
         String version = poeBuildFilter.getVersion();
-        String poeClass = poeBuildFilter.getPoeClass();
+        String poeClassName = poeBuildFilter.getPoeClassName();
         String search = poeBuildFilter.getSearch();
 
         List<BuildDto> buildDtos;
-        if (isNotBlank(version) && isNotBlank(poeClass)) {
-            buildDtos = poeBuildMapper.entityToModel(buildRepository.findByPoeClassNameAndVersion(poeClass, version));
+        if (isNotBlank(version) && isNotBlank(poeClassName) && !poeClassName.equals(PoeClassServiceImpl.ALL_CLASSES)) {
+            buildDtos = poeBuildMapper.entityToModel(buildRepository.findByPoeClassNameAndVersion(poeClassName, version));
         } else if (isNotBlank(version)) {
             buildDtos = poeBuildMapper.entityToModel(buildRepository.findByVersion(version));
-        } else if (isNotBlank(poeClass)) {
-            buildDtos = poeBuildMapper.entityToModel(buildRepository.findByPoeClassName(poeClass));
+        } else if (isNotBlank(poeClassName)) {
+            buildDtos = poeBuildMapper.entityToModel(buildRepository.findByPoeClassName(poeClassName));
         } else {
             buildDtos = poeBuildMapper.entityToModel(buildRepository.findAll());
         }
