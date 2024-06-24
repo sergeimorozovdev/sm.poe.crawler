@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <title>PoE Build Aggregator</title>
+</head>
+<body>
+<h1>
+    PoE Builds Aggregator
+</h1>
+<p>
+    Find your path
+</p>
+<main>
+    <select id="poeClasses"></select>
+    <select id="version"></select>
+    <input id="search">
+    <table>
+        <thead>
+        <tr>
+            <th>Class</th>
+            <th>Build Name</th>
+            <th>Views</th>
+        </tr>
+        </thead>
+        <tbody id="buildsTableBody"></tbody>
+    </table>
+</main>
+
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/js/script.js}"></script>

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>sm.poe</groupId>
 	<artifactId>crawler</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>sm.poe.crawler</name>
 	<description>sm.poe.crawler</description>
 	<properties>
@@ -31,8 +31,14 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.15.4</version>
+		</dependency>
+		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<version>1.4.200</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
